@@ -44,6 +44,20 @@ impl CPU {
                 };
                 self.pc.wrapping_add(1);
             }
+            Instruction::CALL(test) => {
+                let jump_condition = match test {
+                    JumpTest::NotZero => !self.registers.f.zero,
+                    _ => { panic!("TODO: support more conditions")  }
+                };
+                self.call(jump_condition);
+            }
+            Instruction::RET(test) => { 
+                let jump_condition = match test {
+                    JumpTest::NotZero => !self.registers.f.zero,
+                    _ => { panic!("TODO: support more conditions")  }
+                };
+                self.return_(jump_condition);
+            }
             Instruction::JP(test) => {
                 let jump_condition = match test {
                     JumpTest::NotZero => !self.registers.f.zero,
@@ -142,5 +156,23 @@ impl CPU {
         self.sp = self.sp.wrapping_add(1);
 
         (msb << 8) | lsb
+    }
+
+    fn call(&mut self, should_jump: bool) -> u16 {
+        let next_pc = self.pc.wrapping_add(3);
+        if should_jump {
+            self.push(next_pc);
+            self.read_next_word();
+        } else {
+            next_pc
+        }
+    }
+
+    fn return_(&mut self, should_jump: bool) -> u16 {
+        if should_jump {
+            self.pop()
+        } else {
+            self.pc.wrapping_add(1)
+        }
     }
 }

@@ -7,6 +7,9 @@ enum Instruction {
     JP(JumpTest),
     LD(LoadType),
     PUSH(StackTarget),
+    POP(StackTarget),
+    CALL(JumpTest),
+    RET(JumpTest),
 }
 
 enum ArithmeticTarget {
